@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"log"
 	"net"
 	"net/http"
@@ -81,11 +80,7 @@ func (p *DDNSPilot) handleLogin(w http.ResponseWriter, r *http.Request) {
 			UsingDefaultPassword: !p.config.Web.DefaultPasswordChanged,
 		}
 
-		tmpl := template.Must(template.New("login").Parse(loginTemplate))
-		if err := tmpl.Execute(w, data); err != nil {
-			log.Printf("Template execution error in handleLogin: %v", err)
-			http.Error(w, "Template error", http.StatusInternalServerError)
-		}
+		renderTemplate(w, "login.html", data)
 		return
 	}
 
@@ -102,11 +97,7 @@ func (p *DDNSPilot) handleLogin(w http.ResponseWriter, r *http.Request) {
 				UsingDefaultPassword: !p.config.Web.DefaultPasswordChanged,
 			}
 
-			tmpl := template.Must(template.New("login").Parse(loginTemplate))
-			if err := tmpl.Execute(w, data); err != nil {
-				log.Printf("Template execution error in handleLogin: %v", err)
-				http.Error(w, "Template error", http.StatusInternalServerError)
-			}
+			renderTemplate(w, "login.html", data)
 			return
 		}
 
@@ -129,11 +120,7 @@ func (p *DDNSPilot) handleLogin(w http.ResponseWriter, r *http.Request) {
 				UsingDefaultPassword: !p.config.Web.DefaultPasswordChanged,
 			}
 
-			tmpl := template.Must(template.New("login").Parse(loginTemplate))
-			if err := tmpl.Execute(w, data); err != nil {
-				log.Printf("Template execution error in handleLogin: %v", err)
-				http.Error(w, "Template error", http.StatusInternalServerError)
-			}
+			renderTemplate(w, "login.html", data)
 			return
 		}
 
@@ -177,11 +164,7 @@ func (p *DDNSPilot) handleChangePassword(w http.ResponseWriter, r *http.Request)
 		}{
 			Forced: forced,
 		}
-		tmpl := template.Must(template.New("changePassword").Parse(changePasswordTemplate))
-		if err := tmpl.Execute(w, data); err != nil {
-			log.Printf("Template execution error in handleChangePassword: %v", err)
-			http.Error(w, "Template error", http.StatusInternalServerError)
-		}
+		renderTemplate(w, "change-password.html", data)
 	case "POST":
 		newPassword := r.FormValue("new_password")
 		confirmPassword := r.FormValue("confirm_password")
@@ -321,12 +304,7 @@ func (p *DDNSPilot) handleIndex(w http.ResponseWriter, r *http.Request) {
 		UpdateType:    updateType,
 	}
 
-	tmpl := template.Must(template.New("index").Parse(indexTemplate))
-	if err := tmpl.Execute(w, data); err != nil {
-		log.Printf("Template execution error in handleIndex: %v", err)
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
+	renderTemplate(w, "index.html", data)
 }
 
 func (p *DDNSPilot) handleAddRecord(w http.ResponseWriter, r *http.Request) {
@@ -395,12 +373,7 @@ func (p *DDNSPilot) handleAddRecord(w http.ResponseWriter, r *http.Request) {
 		DefaultAPIToken: p.config.DefaultAPIToken,
 	}
 
-	tmpl := template.Must(template.New("addRecord").Parse(addRecordTemplate))
-	if err := tmpl.Execute(w, data); err != nil {
-		log.Printf("Template execution error in handleAddRecord: %v", err)
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
+	renderTemplate(w, "add-record.html", data)
 }
 
 func (p *DDNSPilot) handleEditRecord(w http.ResponseWriter, r *http.Request) {
@@ -443,12 +416,7 @@ func (p *DDNSPilot) handleEditRecord(w http.ResponseWriter, r *http.Request) {
 		Record: *record,
 	}
 
-	tmpl := template.Must(template.New("editRecord").Parse(editRecordTemplate))
-	if err := tmpl.Execute(w, data); err != nil {
-		log.Printf("Template execution error in handleEditRecord: %v", err)
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
+	renderTemplate(w, "edit-record.html", data)
 }
 
 func (p *DDNSPilot) handleRemoveRecord(w http.ResponseWriter, r *http.Request) {
@@ -628,12 +596,7 @@ func (p *DDNSPilot) handleSettings(w http.ResponseWriter, r *http.Request) {
 		Config: p.config,
 	}
 
-	tmpl := template.Must(template.New("settings").Parse(settingsTemplate))
-	if err := tmpl.Execute(w, data); err != nil {
-		log.Printf("Template execution error in handleSettings: %v", err)
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
+	renderTemplate(w, "settings.html", data)
 }
 
 func (p *DDNSPilot) handleStatsAPI(w http.ResponseWriter, r *http.Request) {

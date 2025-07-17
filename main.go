@@ -21,7 +21,6 @@ type DDNSPilot struct {
 func main() {
 	// Parse command line flags
 	var (
-		webMode     = flag.Bool("web", false, "Start web interface")
 		cliMode     = flag.Bool("cli", false, "Run in CLI mode")
 		updateAll   = flag.Bool("update", false, "Update all enabled DNS records")
 		addRecord   = flag.Bool("add", false, "Add a new DNS record interactively")
@@ -52,9 +51,7 @@ func main() {
 	}
 
 	// Determine mode
-	if *webMode {
-		pilot.startWebMode()
-	} else if *cliMode || *updateAll || *addRecord || *listRecords {
+	if *cliMode || *updateAll || *addRecord || *listRecords {
 		pilot.runCLIMode(*updateAll, *addRecord, *listRecords)
 	} else {
 		// Default: start web mode if no arguments provided
@@ -64,6 +61,10 @@ func main() {
 }
 
 func (p *DDNSPilot) startWebMode() {
+	// Initialize templates and static file handling
+	initTemplates()
+	setupStaticHandler()
+
 	// Start session cleanup routine
 	go func() {
 		ticker := time.NewTicker(5 * time.Minute)
@@ -303,8 +304,9 @@ func showUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  ddns-pilot [OPTIONS]")
 	fmt.Println()
+	fmt.Println("Default: Web interface (no arguments)")
+	fmt.Println()
 	fmt.Println("Options:")
-	fmt.Println("  --web         Start web interface (default)")
 	fmt.Println("  --cli         Run in CLI mode")
 	fmt.Println("  --update      Update all enabled DNS records")
 	fmt.Println("  --add         Add a new DNS record interactively")
@@ -312,7 +314,7 @@ func showUsage() {
 	fmt.Println("  --help        Show this help message")
 	fmt.Println()
 	fmt.Println("Examples:")
-	fmt.Println("  ddns-pilot --web                 # Start web interface")
+	fmt.Println("  ddns-pilot                       # Start web interface (default)")
 	fmt.Println("  ddns-pilot --update              # Update all records")
 	fmt.Println("  ddns-pilot --add                 # Add new record")
 	fmt.Println("  ddns-pilot --list                # List records")

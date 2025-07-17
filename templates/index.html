@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDNS Pilot Dashboard</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚁 DDNS Pilot</h1>
+            <div class="nav-buttons">
+                <a href="/add-record" class="btn btn-primary">Add Record</a>
+                <a href="/settings" class="btn btn-secondary">Settings</a>
+                <a href="/logout" class="btn btn-warning">Logout</a>
+            </div>
+        </div>
+
+        {{if .UpdateMessage}}
+        <div class="alert alert-{{.UpdateType}} alert-dismissible">
+            {{.UpdateMessage | html}}
+            <button type="button" class="close" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+        {{end}}
+
+        <div class="status-panel">
+            <h3>📊 Status Overview</h3>
+            <div class="status-grid">
+                <div class="status-item">
+                    <strong>Current Public IP:</strong><br>
+                    <span class="last-ip">{{.CurrentIP}}</span>
+                </div>
+                <div class="status-item">
+                    <strong>Total Records:</strong><br>
+                    {{len .Records}}
+                </div>
+                <div class="status-item">
+                    <strong>Auto-Update:</strong><br>
+                    {{if .Config.AutoUpdate}}✅ Enabled ({{.Config.UpdateInterval}}min){{else}}❌ Disabled{{end}}
+                </div>
+                <div class="status-item">
+                    <form method="post" action="/update-records" style="margin: 0;">
+                        <button type="submit" class="btn btn-success">🔄 Update All</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{if .Records}}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Record Name</th>
+                        <th>Status</th>
+                        <th>Proxied</th>
+                        <th>Last IP</th>
+                        <th>Last Updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Records}}
+                    <tr>
+                        <td class="record-name">{{.RecordName | html}}</td>
+                        <td>
+                            {{if .Enabled}}
+                                <span class="status-enabled">✅ Enabled</span>
+                            {{else}}
+                                <span class="status-disabled">❌ Disabled</span>
+                            {{end}}
+                        </td>
+                        <td>{{if .Proxied}}🟠 Yes{{else}}🔵 No{{end}}</td>
+                        <td>
+                            {{if .LastIP}}
+                                <span class="last-ip">{{.LastIP | html}}</span>
+                            {{else}}
+                                <em>Never updated</em>
+                            {{end}}
+                        </td>
+                        <td>
+                            {{if .LastUpdated}}
+                                {{.LastUpdated | html}}
+                            {{else}}
+                                <em>Never</em>
+                            {{end}}
+                        </td>
+                        <td class="actions">
+                            <form method="post" action="/update-single" style="display: inline;">
+                                <input type="hidden" name="record_name" value="{{.RecordName | html}}">
+                                <button type="submit" class="btn btn-success">Update</button>
+                            </form>
+                            <form method="post" action="/toggle-record" style="display: inline;">
+                                <input type="hidden" name="record_name" value="{{.RecordName | html}}">
+                                <button type="submit" class="btn {{if .Enabled}}btn-warning{{else}}btn-success{{end}}">
+                                    {{if .Enabled}}Disable{{else}}Enable{{end}}
+                                </button>
+                            </form>
+                            <a href="/edit-record?name={{.RecordName | urlquery}}" class="btn btn-secondary">Edit</a>
+                            <form method="post" action="/remove-record" style="display: inline;" onsubmit="return confirm('Are you sure you want to remove this record?')">
+                                <input type="hidden" name="record_name" value="{{.RecordName | html}}">
+                                <button type="submit" class="btn btn-danger">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <div class="empty-state">
+            <h3>No DNS Records Configured</h3>
+            <p>Get started by adding your first CloudFlare DNS record.</p>
+            <a href="/add-record" class="btn btn-primary">Add Your First Record</a>
+        </div>
+        {{end}}
+    </div>
+
+    <script src="/static/js/main.js"></script>
+    <script>
+        // Auto-refresh page every 5 minutes if auto-update is enabled
+        {{if .Config.AutoUpdate}}
+        setTimeout(function() {
+            window.location.reload();
+        }, 5 * 60 * 1000);
+        {{end}}
+    </script>
+</body>
+</html> 

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add DNS Record - DDNS Pilot</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Add DNS Record</h1>
+        
+        <div class="info-box">
+            <h3>📝 Instructions</h3>
+            <p>Enter your CloudFlare DNS record details below. The zone and record IDs will be automatically looked up using your API token.</p>
+            <ul>
+                <li><strong>Record Name:</strong> Full domain name (e.g., home.example.com)</li>
+                <li><strong>API Token:</strong> CloudFlare API token with DNS:Edit permissions</li>
+                <li><strong>Proxied:</strong> Whether to proxy traffic through CloudFlare (orange cloud)</li>
+            </ul>
+        </div>
+        
+        <form method="post">
+            <div class="form-group">
+                <label>Record Name:</label>
+                <input type="text" name="record_name" required placeholder="e.g., home.example.com">
+                <div class="help-text">Full domain name for the DNS record</div>
+            </div>
+            
+            <div class="form-group">
+                <label>CloudFlare API Token:</label>
+                <input type="password" name="api_token" required placeholder="Enter your CloudFlare API token" value="{{.DefaultAPIToken | html}}">
+                <div class="help-text">API token with DNS:Edit permissions for your zone</div>
+            </div>
+            
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" name="proxied" value="true">
+                    Proxied via CloudFlare (Orange Cloud)
+                </label>
+                <div class="help-text">Enable CloudFlare proxy for this record</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Notes (Optional):</label>
+                <textarea name="notes" rows="3" placeholder="e.g., Home server, Office connection, etc."></textarea>
+                <div class="help-text">Optional description for this record</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Add Record</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html> 

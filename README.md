@@ -22,8 +22,8 @@ chmod +x ddns-pilot
 # CLI Mode - Add your first record
 ./ddns-pilot --add
 
-# Web Mode - Start web interface
-./ddns-pilot --web
+# Web Mode - Start web interface (default)
+./ddns-pilot
 # Open browser → http://localhost:8082
 # Login: admin / admin (changeable in settings)
 ```
@@ -112,11 +112,9 @@ go build -o ddns-pilot .
 ```bash
 # Start web interface (default mode)
 ./ddns-pilot
-# or explicitly
-./ddns-pilot --web
 
 # Use custom port
-PORT=8080 ./ddns-pilot --web
+PORT=8080 ./ddns-pilot
 ```
 
 ### Setup Process
@@ -216,7 +214,7 @@ dig +short your-record.example.com @1.1.1.1
 netstat -tlnp | grep 8082
 
 # Try different port
-PORT=8083 ./ddns-pilot --web
+PORT=8083 ./ddns-pilot
 ```
 
 ## 🏗️ Architecture

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DDNS Pilot</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="logo-section">
+            <h1>🚁 DDNS Pilot</h1>
+            <p>CloudFlare Dynamic DNS Manager</p>
+        </div>
+        
+        {{if .UsingDefaultPassword}}
+        <div class="security-warning">
+            <strong>⚠️ Security Notice</strong>
+            <strong>Default credentials detected!</strong> Change the password after login.
+            <br><br>
+            • This tool manages your DNS records and CloudFlare API access<br>
+            • Use only on trusted local networks<br>
+            • Consider using on-demand for maximum security
+        </div>
+        {{else}}
+        <div class="security-warning">
+            <strong>⚠️ Security Notice</strong>
+            This interface manages your DNS records and CloudFlare API access.
+            <br><br>
+            • Use only on trusted local networks<br>
+            • Consider using on-demand for maximum security
+        </div>
+        {{end}}
+        
+        {{if .IsBlocked}}
+        <div class="blocked-message">
+            🚫 Too many failed attempts. Try again in 15 minutes.
+        </div>
+        {{else}}
+            {{if .Error}}
+            <div class="error-message">
+                {{.Error}}
+            </div>
+            {{end}}
+            
+            <form method="post" action="/login" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" value="admin" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required autofocus>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="loginBtn">
+                    Sign In
+                </button>
+            </form>
+        {{end}}
+        
+        <div class="footer">
+            <p>DDNS Pilot v1.0</p>
+        </div>
+    </div>
+
+    <script>
+        {{if not .IsBlocked}}
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('loginBtn');
+            btn.textContent = 'Signing in...';
+            btn.disabled = true;
+        });
+        
+        // Auto-focus on password field since username is readonly
+        document.getElementById('password').focus();
+        {{end}}
+    </script>
+</body>
+</html> 
