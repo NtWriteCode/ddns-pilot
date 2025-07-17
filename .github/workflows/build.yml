@@ -17,17 +17,9 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: '1.21'
-        
-    - name: Cache Go modules
-      uses: actions/cache@v3
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
           
     - name: Make build script executable
       run: chmod +x build.sh
@@ -35,17 +27,51 @@ jobs:
     - name: Build binaries
       run: ./build.sh
       
-    - name: Upload build artifacts
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: actions/upload-artifact@v3
+    - name: Upload Linux AMD64 
+      uses: actions/upload-artifact@v4
       with:
-        name: ddns-pilot-binaries
-        path: builds/
+        name: ddns-pilot-linux-amd64
+        path: builds/ddns-pilot-linux-amd64
+        retention-days: 30
+
+    - name: Upload Linux ARM64
+      uses: actions/upload-artifact@v4
+      with:
+        name: ddns-pilot-linux-arm64
+        path: builds/ddns-pilot-linux-arm64
+        retention-days: 30
+
+    - name: Upload Linux ARM
+      uses: actions/upload-artifact@v4
+      with:
+        name: ddns-pilot-linux-arm
+        path: builds/ddns-pilot-linux-arm
+        retention-days: 30
+
+    - name: Upload macOS AMD64
+      uses: actions/upload-artifact@v4
+      with:
+        name: ddns-pilot-darwin-amd64
+        path: builds/ddns-pilot-darwin-amd64
+        retention-days: 30
+
+    - name: Upload macOS ARM64
+      uses: actions/upload-artifact@v4
+      with:
+        name: ddns-pilot-darwin-arm64
+        path: builds/ddns-pilot-darwin-arm64
+        retention-days: 30
+
+    - name: Upload Windows AMD64
+      uses: actions/upload-artifact@v4
+      with:
+        name: ddns-pilot-windows-amd64
+        path: builds/ddns-pilot-windows-amd64.exe
         retention-days: 30
         
     - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/v')
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: builds/*
         generate_release_notes: true
